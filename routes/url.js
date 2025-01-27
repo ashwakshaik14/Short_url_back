@@ -61,6 +61,20 @@ router.post("/shorten", async (req, res) => {
 });
 
 
+router.get("/api/url/:shortcode", async (req, res) => {
+  const { shortcode } = req.params;
+
+  try {
+    const urlData = await Url.findOne({ shortUrl: `https://short-url-back-48bn.onrender.com/api/url/${shortcode}` });
+    if (!urlData) {
+      return res.status(404).json({ error: "Short URL not found" });
+    }
+    res.redirect(urlData.originalUrl);
+  } catch (error) {
+    console.error("Error redirecting:", error.message || error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 // router.get("/:shortcode", async (req, res) => {
