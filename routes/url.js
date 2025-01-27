@@ -28,7 +28,7 @@ router.post("/shorten", async (req, res) => {
   }
 
   const shortcode = generateShortUrl();
-  const fullShortUrl = `http://localhost:3000/api/url/${shortcode}`; // Change "click-me" to "localhost:3000"
+  const fullShortUrl = `https://short-url-r755.onrender.com/api/url/${shortcode}`; // Change "click-me" to "localhost:3000"
 
   const urlData = new Url({
     originalUrl,
