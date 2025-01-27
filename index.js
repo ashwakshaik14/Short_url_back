@@ -70,7 +70,7 @@ if (!process.env.MONGO_URI) {
 }
 
 // CORS Setup (Allow specific origins)
-const allowedOrigins = ["https://test-vite-app2.onrender.com", "http://localhost:5173"];
+const allowedOrigins = ["https://short-url-r755.onrender.com", "http://localhost:5173"];
 app.use(
   cors({
     origin: (origin, callback) => {
