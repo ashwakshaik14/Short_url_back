@@ -70,6 +70,7 @@ router.get("/api/url/:shortcode", async (req, res) => {
       return res.status(404).json({ error: "Short URL not found" });
     }
     res.redirect(urlData.originalUrl);
+    console.log("ori",urlData.originalUrl,"short",urlData.shortUrl)
   } catch (error) {
     console.error("Error redirecting:", error.message || error);
     res.status(500).json({ error: "Internal server error" });
