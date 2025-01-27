@@ -28,7 +28,7 @@ router.post("/shorten", async (req, res) => {
   }
 
   const shortcode = generateShortUrl();
-  const fullShortUrl = `https://short-url-back-48bn.onrender.com/api/url/${shortcode}`; // Change "click-me" to "localhost:3000"
+  const fullShortUrl = `https://short-url-r755.onrender.com/api/url/${shortcode}`; // Change "click-me" to "localhost:3000"
 
   const urlData = new Url({
     originalUrl,
@@ -39,7 +39,7 @@ router.post("/shorten", async (req, res) => {
   });
 
   try {
-    console.log("Saving data to the database:", urlData);
+    console.log("Saving data to database:", urlData);
 
     await urlData.save();
     console.log("URL saved successfully!");
