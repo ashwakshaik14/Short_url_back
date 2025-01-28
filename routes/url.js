@@ -88,62 +88,62 @@ router.post("/shorten", async (req, res) => {
 
 
 
-// router.get("/:shortcode", async (req, res) => {
-//   const { shortcode } = req.params;
+router.get("/:shortcode", async (req, res) => {
+  const { shortcode } = req.params;
 
-//   try {
-//     // Find the URL document by the short code
-//     const urlData = await Url.findOneAndUpdate(
-//       { shortUrl: { $regex: `${shortcode}$` } },
-//       { $inc: { clicks: 1 } }, // Increment clicks field
-//       { new: true } // Return the updated document
-//     );
+  try {
+    // Find the URL document by the short code
+    const urlData = await Url.findOneAndUpdate(
+      { shortUrl: { $regex: `${shortcode}$` } },
+      { $inc: { clicks: 1 } }, // Increment clicks field
+      { new: true } // Return the updated document
+    );
 
-//     if (!urlData) {
-//       return res.status(404).json({ error: "Short URL not found" });
-//     }
+    if (!urlData) {
+      return res.status(404).json({ error: "Short URL not found" });
+    }
 
-//     // Log redirection details
-//     const timestamp = new Date();
-//     const ip = req.ip; // IP of the requester
-//     const userAgent = req.headers['user-agent']; // User agent string from header
-//     const device = getDevice(userAgent); // Function to parse the device from the user agent
+    // Log redirection details
+    const timestamp = new Date();
+    const ip = req.ip; // IP of the requester
+    const userAgent = req.headers['user-agent']; // User agent string from header
+    const device = getDevice(userAgent); // Function to parse the device from the user agent
 
-//     // Save the redirection log
-//     urlData.redirectionLogs.push({
-//       timestamp,
-//       ip,
-//       userAgent,
-//       device
-//     });
+    // Save the redirection log
+    urlData.redirectionLogs.push({
+      timestamp,
+      ip,
+      userAgent,
+      device
+    });
 
-//     // Save the updated URL document
-//     await urlData.save();
+    // Save the updated URL document
+    await urlData.save();
 
-//     // Redirect the user to the original URL
-//     res.redirect(urlData.originalUrl);
-//   } catch (error) {
-//     console.error("Error during redirection:", error.message || error);
-//     res.status(500).json({ error: "Error during redirection" });
-//   }
-// });
+    // Redirect the user to the original URL
+    res.redirect(urlData.originalUrl);
+  } catch (error) {
+    console.error("Error during redirection:", error.message || error);
+    res.status(500).json({ error: "Error during redirection" });
+  }
+});
 
-// // Helper function to get the device type
-// function getDevice(userAgent) {
-//   if (/android/i.test(userAgent)) {
-//     return "Android";
-//   } else if (/iphone/i.test(userAgent)) {
-//     return "iPhone";
-//   } else if (/windows/i.test(userAgent)) {
-//     return "Windows";
-//   } else if (/macintosh/i.test(userAgent)) {
-//     return "MacOS";
-//   } else if (/linux/i.test(userAgent)) {
-//     return "Linux";
-//   } else {
-//     return "Unknown";
-//   }
-// }
+// Helper function to get the device type
+function getDevice(userAgent) {
+  if (/android/i.test(userAgent)) {
+    return "Android";
+  } else if (/iphone/i.test(userAgent)) {
+    return "iPhone";
+  } else if (/windows/i.test(userAgent)) {
+    return "Windows";
+  } else if (/macintosh/i.test(userAgent)) {
+    return "MacOS";
+  } else if (/linux/i.test(userAgent)) {
+    return "Linux";
+  } else {
+    return "Unknown";
+  }
+}
 
 
 router.get("/", async (req, res) => {
@@ -245,35 +245,35 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/:shortcode", async (req, res) => {
-  const { shortcode } = req.params;
+// router.get("/:shortcode", async (req, res) => {
+//   const { shortcode } = req.params;
 
-  try {
-    // Find the URL document by shortcode
-    const urlData = await Url.findOne({ shortUrl: `https://short-url-back-48bn.onrender.com/api/url/${shortcode}` });
+//   try {
+//     // Find the URL document by shortcode
+//     const urlData = await Url.findOne({ shortUrl: `https://short-url-back-48bn.onrender.com/api/url/${shortcode}` });
 
-    if (!urlData) {
-      return res.status(404).json({ error: "URL not found" });
-    }
+//     if (!urlData) {
+//       return res.status(404).json({ error: "URL not found" });
+//     }
 
-    // Optionally, log the redirection (e.g., for analytics)
-    const redirectionLog = {
-      timestamp: new Date(),
-      ip: req.ip,
-      userAgent: req.headers['user-agent'],
-      device: req.headers['user-agent'], // You can use a library like `ua-parser-js` to get device info
-    };
+//     // Optionally, log the redirection (e.g., for analytics)
+//     const redirectionLog = {
+//       timestamp: new Date(),
+//       ip: req.ip,
+//       userAgent: req.headers['user-agent'],
+//       device: req.headers['user-agent'], // You can use a library like `ua-parser-js` to get device info
+//     };
 
-    urlData.redirectionLogs.push(redirectionLog);
-    await urlData.save();
+//     urlData.redirectionLogs.push(redirectionLog);
+//     await urlData.save();
 
-    // Redirect to the original URL
-    res.redirect(urlData.originalUrl);
-  } catch (error) {
-    console.error("Error redirecting:", error.message || error);
-    res.status(500).json({ error: "Error redirecting" });
-  }
-});
+//     // Redirect to the original URL
+//     res.redirect(urlData.originalUrl);
+//   } catch (error) {
+//     console.error("Error redirecting:", error.message || error);
+//     res.status(500).json({ error: "Error redirecting" });
+//   }
+// });
 
 router.get("/clicks", async (req, res) => {
   const { email } = req.query;
