@@ -382,6 +382,120 @@ router.get("/", async (req, res) => {
 // });
 
 
+// router.get("/clicks", async (req, res) => {
+//   const { email } = req.query;
+
+//   if (!email) {
+//     return res.status(400).json({ error: "Email query parameter is required" });
+//   }
+
+//   try {
+//     // Build the query object
+//     let query = { email };
+
+//     // First pipeline: Aggregate clicks grouped by day and device type
+//     let pipelineByDevice = [
+//       { $match: query },  // Match based on email
+//       { $unwind: "$redirectionLogs" },  // Unwind the redirection logs
+//       {
+//         $project: {
+//           date: { $dateToString: { format: "%Y-%m-%d", date: "$redirectionLogs.timestamp" } },  // Extract date from timestamp
+//           device: "$redirectionLogs.device"  // Include device type
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: { date: "$date", device: "$device" },  // Group by date and device
+//           totalClicks: { $sum: 1 }  // Count clicks for each device per day
+//         }
+//       },
+//       { $sort: { "_id.date": 1 } }  // Sort by date
+//     ];
+
+//     // Second pipeline: Aggregate clicks grouped by day (without device)
+//     let pipelineByDay = [
+//       { $match: query },  // Match based on email
+//       { $unwind: "$redirectionLogs" },  // Unwind the redirection logs
+//       {
+//         $project: {
+//           date: { $dateToString: { format: "%d-%m-%Y", date: "$redirectionLogs.timestamp" } },  // Extract date from timestamp
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: "$date",  // Group by date
+//           totalClicks: { $sum: 1 }  // Count clicks per day
+//         }
+//       },
+//       { $sort: { _id: -1 } }  // Sort by date
+//     ];
+
+//     // Execute both aggregations
+//     const dailyClicksByDevice = await Url.aggregate(pipelineByDevice);
+//     const dailyClicks = await Url.aggregate(pipelineByDay);
+
+//     // Log the raw aggregation results
+//     console.log("Daily Clicks By Device:", dailyClicksByDevice);
+//     console.log("Daily Clicks:", dailyClicks);
+
+//     // Calculate cumulative clicks and device-wise clicks for the first pipeline
+//     let cumulativeClicks = 0;
+//     let deviceClickCounts = {};  // Object to hold device-wise click counts
+//     const dailyWithDeviceClicks = dailyClicksByDevice.map(day => {
+//       cumulativeClicks += day.totalClicks;  // Add current day's clicks to the cumulative count
+
+//       // Initialize device-wise counts if not already present
+//       if (!deviceClickCounts[day._id.device]) {
+//         deviceClickCounts[day._id.device] = 0;
+//       }
+
+//       deviceClickCounts[day._id.device] += day.totalClicks;  // Add the clicks for this device
+
+//       return {
+//         date: day._id.date,
+//         device: day._id.device,
+//         totalClicks: day.totalClicks,
+//         cumulativeClicks  // Include the cumulative count
+//       };
+//     });
+
+//     // Calculate cumulative clicks for the second pipeline (without device breakdown)
+//     let cumulativeClicksForDay = 0;
+//     const dailyWithCumulativeClicks = dailyClicks.map(day => {
+//       cumulativeClicksForDay += day.totalClicks;  // Add current day's clicks to the cumulative count
+//       return {
+//         date: day._id,
+//         totalClicks: day.totalClicks,
+//         cumulativeClicksForDay // Include the cumulative count without device breakdown
+//       };
+//     });
+
+//     // Calculate total clicks across all days
+//     const totalClicks = cumulativeClicks;
+
+//     // Calculate total device-wise clicks
+//     const totalDeviceClicks = Object.entries(deviceClickCounts).map(([device, clicks]) => ({ device, clicks }));
+
+//     // Log the final data being sent to the frontend
+//     console.log("Total Clicks:", totalClicks);
+//     console.log("Total Device Clicks:", totalDeviceClicks);
+//     console.log("Daily Clicks with Cumulative:", dailyWithCumulativeClicks);
+
+//     // Return the result
+//     res.status(200).json({
+//       totalClicks,  // Total clicks across all days
+//       totalDeviceClicks,  // Total clicks per device
+//       dailyClicks: dailyWithCumulativeClicks  // Daily click counts without device breakdown and cumulative sum
+//     });
+//   } catch (error) {
+//     console.error("Error fetching clicks:", error.message || error);
+//     res.status(500).json({ error: "Error fetching clicks" });
+//   }
+// });
+// keep it ori
+
+
+
 router.get("/clicks", async (req, res) => {
   const { email } = req.query;
 
@@ -390,110 +504,20 @@ router.get("/clicks", async (req, res) => {
   }
 
   try {
-    // Build the query object
     let query = { email };
 
-    // First pipeline: Aggregate clicks grouped by day and device type
-    let pipelineByDevice = [
-      { $match: query },  // Match based on email
-      { $unwind: "$redirectionLogs" },  // Unwind the redirection logs
-      {
-        $project: {
-          date: { $dateToString: { format: "%Y-%m-%d", date: "$redirectionLogs.timestamp" } },  // Extract date from timestamp
-          device: "$redirectionLogs.device"  // Include device type
-        }
-      },
-      {
-        $group: {
-          _id: { date: "$date", device: "$device" },  // Group by date and device
-          totalClicks: { $sum: 1 }  // Count clicks for each device per day
-        }
-      },
-      { $sort: { "_id.date": 1 } }  // Sort by date
-    ];
+    // Check if any URLs exist for the user
+    const userUrls = await Url.find(query);
+    if (userUrls.length === 0) {
+      return res.status(404).json({ error: "No URLs found for this user" });
+    }
 
-    // Second pipeline: Aggregate clicks grouped by day (without device)
-    let pipelineByDay = [
-      { $match: query },  // Match based on email
-      { $unwind: "$redirectionLogs" },  // Unwind the redirection logs
-      {
-        $project: {
-          date: { $dateToString: { format: "%d-%m-%Y", date: "$redirectionLogs.timestamp" } },  // Extract date from timestamp
-        }
-      },
-      {
-        $group: {
-          _id: "$date",  // Group by date
-          totalClicks: { $sum: 1 }  // Count clicks per day
-        }
-      },
-      { $sort: { _id: -1 } }  // Sort by date
-    ];
-
-    // Execute both aggregations
-    const dailyClicksByDevice = await Url.aggregate(pipelineByDevice);
-    const dailyClicks = await Url.aggregate(pipelineByDay);
-
-    // Log the raw aggregation results
-    console.log("Daily Clicks By Device:", dailyClicksByDevice);
-    console.log("Daily Clicks:", dailyClicks);
-
-    // Calculate cumulative clicks and device-wise clicks for the first pipeline
-    let cumulativeClicks = 0;
-    let deviceClickCounts = {};  // Object to hold device-wise click counts
-    const dailyWithDeviceClicks = dailyClicksByDevice.map(day => {
-      cumulativeClicks += day.totalClicks;  // Add current day's clicks to the cumulative count
-
-      // Initialize device-wise counts if not already present
-      if (!deviceClickCounts[day._id.device]) {
-        deviceClickCounts[day._id.device] = 0;
-      }
-
-      deviceClickCounts[day._id.device] += day.totalClicks;  // Add the clicks for this device
-
-      return {
-        date: day._id.date,
-        device: day._id.device,
-        totalClicks: day.totalClicks,
-        cumulativeClicks  // Include the cumulative count
-      };
-    });
-
-    // Calculate cumulative clicks for the second pipeline (without device breakdown)
-    let cumulativeClicksForDay = 0;
-    const dailyWithCumulativeClicks = dailyClicks.map(day => {
-      cumulativeClicksForDay += day.totalClicks;  // Add current day's clicks to the cumulative count
-      return {
-        date: day._id,
-        totalClicks: day.totalClicks,
-        cumulativeClicksForDay // Include the cumulative count without device breakdown
-      };
-    });
-
-    // Calculate total clicks across all days
-    const totalClicks = cumulativeClicks;
-
-    // Calculate total device-wise clicks
-    const totalDeviceClicks = Object.entries(deviceClickCounts).map(([device, clicks]) => ({ device, clicks }));
-
-    // Log the final data being sent to the frontend
-    console.log("Total Clicks:", totalClicks);
-    console.log("Total Device Clicks:", totalDeviceClicks);
-    console.log("Daily Clicks with Cumulative:", dailyWithCumulativeClicks);
-
-    // Return the result
-    res.status(200).json({
-      totalClicks,  // Total clicks across all days
-      totalDeviceClicks,  // Total clicks per device
-      dailyClicks: dailyWithCumulativeClicks  // Daily click counts without device breakdown and cumulative sum
-    });
+    // Proceed with aggregation pipelines...
   } catch (error) {
     console.error("Error fetching clicks:", error.message || error);
     res.status(500).json({ error: "Error fetching clicks" });
   }
 });
-
-
 
 
 
