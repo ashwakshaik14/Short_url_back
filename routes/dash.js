@@ -35,7 +35,7 @@ router.get("/clicks", async (req, res) => {
             totalClicks: { $sum: 1 },
           },
         },
-        { $sort: { _id: 1 } }, // Sort by date in ascending order
+        { $sort: { _id: -1 } }, // Sort by date in ascending order
         {
           $project: {
             date: "$_id",
