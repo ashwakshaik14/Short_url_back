@@ -257,14 +257,14 @@ router.get("/:shortcode", async (req, res) => {
     }
 
     // Optionally, log the redirection (e.g., for analytics)
-    // const redirectionLog = {
-    //   timestamp: new Date(),
-    //   ip: req.ip,
-    //   userAgent: req.headers['user-agent'],
-    //   device: req.headers['user-agent'], // You can use a library like `ua-parser-js` to get device info
-    // };
+    const redirectionLog = {
+      timestamp: new Date(),
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+      device: req.headers['user-agent'], // You can use a library like `ua-parser-js` to get device info
+    };
 
-    // urlData.redirectionLogs.push(redirectionLog);
+    urlData.redirectionLogs.push(redirectionLog);
     await urlData.save();
 
     // Redirect to the original URL
