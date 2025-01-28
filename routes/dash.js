@@ -4,11 +4,6 @@ const Url = require("../schema/url.schema");
 const crypto = require("crypto");
 const UAParser = require("ua-parser-js"); // Install this: npm install ua-parser-js
 
-
-const express = require("express");
-const router = express.Router();
-const Url = require("../models/Url"); // Assuming the Url model is defined in this path
-
 router.get("/clicks", async (req, res) => {
   const { email } = req.query;
 
