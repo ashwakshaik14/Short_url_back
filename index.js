@@ -56,6 +56,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const userRoute = require("./routes/user");
 const urlRoute = require("./routes/url"); // Import URL routes
+const dashRoute=require("./routes/dash");
 
 
 
@@ -107,6 +108,7 @@ mongoose
 // Routes
 app.use("/api/user", userRoute);
 app.use("/api/url", urlRoute); // Use URL routes
+app.use("/api/dash",dashRoute);
 
 
 // Start Server

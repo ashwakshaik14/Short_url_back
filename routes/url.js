@@ -496,29 +496,6 @@ router.get("/", async (req, res) => {
 
 
 
-router.get("/clicks", async (req, res) => {
-  const { email } = req.query;
-
-  if (!email) {
-    return res.status(400).json({ error: "Email query parameter is required" });
-  }
-
-  try {
-    let query = { email };
-
-    // Check if any URLs exist for the user
-    const userUrls = await Url.find(query);
-    console.log("User URLs:", userUrls);
-    if (userUrls.length === 0) {
-      return res.status(404).json({ error: "No URLs found for this user" });
-    }
-
-    // Proceed with aggregation pipelines...
-  } catch (error) {
-    console.error("Error fetching clicks:", error.message || error);
-    res.status(500).json({ error: "Error fetching clicks" });
-  }
-});
 
 
 
