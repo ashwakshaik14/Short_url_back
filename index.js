@@ -88,6 +88,7 @@ app.use(
 
 // Middleware for parsing JSON and URL-encoded bodies
 app.use(express.json());
+app.set('trust proxy', true);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to MongoDB
