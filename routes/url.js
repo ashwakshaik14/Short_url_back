@@ -105,7 +105,7 @@ router.get("/:shortcode", async (req, res) => {
 
     // Log redirection details
     const timestamp = new Date();
-    const ip = req.ip; // IP of the requester
+    const ip = req.headers['x-forwarded-for'] || req.ip; // Use X-Forwarded-For if available
     const userAgent = req.headers['user-agent']; // User agent string from header
     const device = getDevice(userAgent); // Function to parse the device from the user agent
 
