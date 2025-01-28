@@ -83,7 +83,7 @@ router.get("/clicks", async (req, res) => {
       return {
         date: item.date,
         clicks: item.clicks,
-        cumulativeClicks, // Add cumulative clicks to each day's data
+        cumulativeClicks:item.cumulativeClicks, // Add cumulative clicks to each day's data
       };
     });
 
