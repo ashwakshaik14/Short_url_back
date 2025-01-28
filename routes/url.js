@@ -508,6 +508,7 @@ router.get("/clicks", async (req, res) => {
 
     // Check if any URLs exist for the user
     const userUrls = await Url.find(query);
+    console.log("User URLs:", userUrls);
     if (userUrls.length === 0) {
       return res.status(404).json({ error: "No URLs found for this user" });
     }
