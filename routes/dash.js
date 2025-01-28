@@ -137,7 +137,7 @@ router.get("/clicks", async (req, res) => {
             clicks: { $sum: 1 },
           },
         },
-        { $sort: { _id: 1 } },
+        { $sort: { _id: -1 } },
         {
           $project: {
             date: "$_id",
