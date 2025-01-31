@@ -1,28 +1,3 @@
-// const mongoose = require("mongoose");
-
-// const urlSchema = new mongoose.Schema({
-//   originalUrl: { type: String, required: true },
-//   shortUrl: { type: String, required: true, unique: true },
-//   remarks: { type: String },
-//   email: { type: String, required: true }, // New field for email
-//   expirationDate: { type: Date },
-//   createdAt: { type: Date, default: Date.now },
-// });
-
-// module.exports = mongoose.model("Url", urlSchema);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const mongoose = require("mongoose");
 
